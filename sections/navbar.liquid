@@ -111,6 +111,7 @@
                         {% render 'mini-cart' %}
                     </div>
                 </li>
+                
             </ul>
         </div>
 
@@ -165,6 +166,9 @@
                         {% endif %}
                     </li>
                 {% endfor %}
+                <li class="nav-item">
+                    <a href="" class="btn btn-primary">Take The Quick</a>
+                </li>
                 {% if section.settings.show_account and shop.customer_accounts_enabled %}
                     <li class="nav-item d-{{ section.settings.breakpoint }}-none">
                         <a 
