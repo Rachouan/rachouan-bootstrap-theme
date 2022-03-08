@@ -23,7 +23,7 @@
             <!-- Copyright -->
             <div 
                 id="footer-copyright" 
-                class="text-center">
+                class="text-center d-inline-flex align-items-center justify-content-center w-100">
                 <span
                     id="footer-copyright-copy">
                     &copy; {{ 'now' | date: "%Y" }}, {{ shop.name }}
@@ -39,6 +39,7 @@
                             Shopify</a>
                     </span>
                 {% endif %}
+                <img src="{{ 'science-based.png' | asset_url }}" width="250" class="d-inline-block mx-3"/>
                 {% if section.settings.show_theme_by %}
                     <span 
                         id="footer-copyright-theme-by"
