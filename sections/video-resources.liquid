@@ -1,0 +1,240 @@
+{% assign pt = section.settings.padding_top | prepend: 'pt-' %}
+{% assign pb = section.settings.padding_bottom | prepend: 'pb-' %}
+{% assign mt = section.settings.margin_top | prepend: 'mt-' %}
+{% assign mb = section.settings.margin_bottom | prepend: 'mb-' %}
+
+<section 
+    id="video-resources-section-{{ section.id }}" 
+    class="video-resources-section {% if section.settings.light_bg %}bg-light{% endif %} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <div class="{% if section.settings.container %}container{% else %}container-fluid{% endif %}">
+
+        <div class="heading-wrapper mb-3 overflow-hidden {{ section.settings.heading_alignment }}">
+
+            <h2 class="heading mb-1 {{ section.settings.heading_size }}">
+                {{ section.settings.heading }}
+            </h2>
+
+            {% unless section.settings.subheading == blank %}
+                <div class="subheading rte text-muted {{ section.settings.subheading_size }}">
+                    {{ section.settings.subheading }}
+                </div>
+            {% endunless %}
+
+        </div>
+
+        {%raw%}
+        <div id="hub-video-app" class="w-100">
+            <div v-if="videos">
+
+                <article class="mb-4">
+                    <div class="sixteenByNineFrame">
+                        <iframe width="100%" height="540" :src="`https://www.youtube.com/embed/${video.snippet.resourceId.videoId}`" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </article>
+                <aside>
+                    <div class="row">
+                        <a v-for="(video, index) in videos" href="" style="cursor:pointer;" @click.prevent="showPlayer(video)" class="col-3">
+                            <div class="position-relative">
+                                <img :src="video.snippet.thumbnails.medium.url" class="rounded w-100"/>
+                                <div class="play-button d-flex justify-content-center align-items-center position-absolute sticky-top w-100 h-100">
+                                    {%endraw%}<img src="{{ 'play-button.svg' | asset_url }}" width="40"/>{%raw%}
+                                </div>
+                                <h2 class="h4 d-none">{{video.snippet.title}}</h2>
+                            </div>
+                        </a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+        {%endraw%}
+
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "Video resources",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General settings"
+        },
+        {
+            "type": "text",
+            "id": "heading",
+            "label": "Heading",
+            "info": "Leave empty to disable",
+            "default": "HTML"
+        },
+        {
+            "type": "richtext",
+            "id": "subheading",
+            "label": "Subheading",
+            "info": "Leave empty to disable",
+            "default": "<p>Write something catchy for this section.</p>"
+        },
+        {
+            "type": "checkbox",
+            "id": "container",
+            "label": "Wrap in container",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "light_bg",
+            "label": "Light background",
+            "default": false
+        },
+        {
+            "type": "select",
+            "id": "heading_size",
+            "label": "Heading size",
+            "default": "h2",
+            "options": [
+                {  "value": "h1", "label": "H1" },
+                {  "value": "h2", "label": "H2" },
+                {  "value": "h3", "label": "H3" },
+                {  "value": "h4", "label": "H4" },
+                {  "value": "h5", "label": "H5" },
+                {  "value": "h6", "label": "H6" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "subheading_size",
+            "label": "Subheading size",
+            "options": [
+                { "value": "", "label": "Normal" },
+                { "value": "lead", "label": "Large" }
+            ],
+            "default": ""
+        },
+        {
+            "type": "select",
+            "id": "heading_alignment",
+            "label": "Heading alignment",
+            "options": [
+                { "value": "text-start", "label": "Left" },
+                { "value": "text-center", "label": "Center" },
+                { "value": "text-end", "label": "Right" }
+            ],
+            "default": "text-center"
+        },
+        {
+            "type": "header",
+            "content": "Spacing",
+            "info": "Based on Bootstrap spacing utility classes [Learn more](https://getbootstrap.com/docs/5.0/utilities/spacing/)"
+        },
+        {
+            "type": "range",
+            "id": "padding_top",
+            "label": "Padding top",
+            "min": 0,
+            "max": 12,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 12,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "margin_top",
+            "label": "Margin top",
+            "min": 0,
+            "max": 12,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "margin_bottom",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 12,
+            "step": 1,
+            "default": 7
+        }
+    ],
+    "presets": [
+        {
+            "name": "Video resources",
+            "category": "Advanced"
+        }
+    ]
+}
+{% endschema %}
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+      let app = new Vue({
+      el: '#hub-video-app',
+      data: {
+        videos: null,
+        video: null,
+        showplayer:false,
+        playlistId: "PLTUpS48w2JYjld3eKFNKhzmiUhBUGdZ1n",
+        APIKey: "AIzaSyCV-BbdW2abIeCTuzDWRYrf8j6S6ey-ins",
+        baseURL: "https://www.googleapis.com/youtube/v3/"
+  
+      },
+      filters: {
+        truncate: function (value,trunc) {
+          if (!value && value.length > trunc) return 'No description'
+          value = value.toString()
+          return value.substring(0, trunc) + '...'
+        },
+        
+      },
+      methods: {
+        linkify: function(inputText) {
+            var replacedText, replacePattern1, replacePattern2, replacePattern3;
+  
+            //URLs starting with http://, https://, or ftp://
+            replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+            replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
+  
+            //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+            replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+            replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
+  
+            //Change email addresses to mailto:: links.
+            replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+            replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
+  
+            return replacedText;
+        },
+        loadVideos() {
+          let self = this
+          this.loadVideos = true
+          fetch(this.baseURL + "playlistItems?part=snippet&maxResults=4&playlistId=" + this.playlistId + "&key=" + this.APIKey)
+          .then(response => response.json())
+          .then(data => {
+            if(data.items.length){
+              console.log(data.items)
+              self.videos = data.items
+              console.log(self.videos)
+              self.video = self.videos[0]
+              console.log(self.video.snippet.description.split('SAY HI:')[0])
+            }
+          })
+        },
+        showPlayer(video){
+          this.video = video
+          this.showplayer = true
+        }
+      },
+      created() {
+        this.loadVideos()
+      }
+    })
+    });
+    
+  </script>
