@@ -123,7 +123,7 @@
             <!-- Navbar nav -->
             <ul
                 id="navbar-nav" 
-                class="navbar-nav my-2 my-{{ section.settings.breakpoint }}-0 {{ section.settings.menu_position | escape }}">
+                class="navbar-nav my-2 my-{{ section.settings.breakpoint }}-0 {{ section.settings.menu_position | escape }} align-items-center">
                 {% for link in linklists[section.settings.menu].links %}
                     {% if link.links == blank %}
                         {% assign has_dropdown = false %}
@@ -181,7 +181,8 @@
                 {% endif %}
 
                 <li class="nav-item">
-                    <a href="https://perdue-backyard-chickens.jebbit.com/unodd7zn?L=Owned+Web" class="btn btn-primary d-inline-flex align-items-center" target="_blank">Take The Quick</a>
+                    <img src="{{'made-in-the-usa.png' | asset_url}}" alt="made in the usa" width="60"/>
+                    <!--<a href="https://perdue-backyard-chickens.jebbit.com/unodd7zn?L=Owned+Web" class="btn btn-primary d-inline-flex align-items-center" target="_blank">Take The Quick</a> -->
                 </li>
             </ul>
             
