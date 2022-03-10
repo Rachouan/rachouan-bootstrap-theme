@@ -52,7 +52,7 @@
                        
                         <!-- Image -->
                         {% unless block.settings.img == blank %}
-                            {% assign img_size = section.settings.img_width | append: 'x' | append: section.settings.img_height %}
+                            {% assign img_size = section.settings.img_width | times: 2 | append: 'x' | append: section.settings.img_height | times: 2 %}
                             <img 
                                 class="product-item-img img-fluid mb-3 {% if section.settings.img_thumbnail %}img-thumbnail{% else %}rounded{% endif %}"
                                 src="{{ block.settings.img | img_url: img_size, crop: 'center' }}"

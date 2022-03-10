@@ -9,7 +9,7 @@
 
 <div
     id="{{ 'carousel-wrapper' | append: section.id }}"    
-    class="{% if section.settings.container %}container{% endif %} {{ mt }} {{ mb }}">
+    class="{% if section.settings.container %}container px-0{% endif %} {{ mt }} {{ mb }}">
 
     <!-- Carousel -->
     <div
@@ -37,6 +37,7 @@
                 <div
                     class="carousel-item {% if forloop.first == true %}active{% endif %}">
                     {% if block.settings.image != blank %}
+
                         {% assign img_size      = section.settings.img_width | append: 'x' | append: section.settings.img_height %}
                         {% assign img_size_800  = 800 | divided_by: block.settings.image.aspect_ratio | round | prepend: '800x' %}
                         <img
@@ -48,13 +49,25 @@
                             height="{{ section.settings.img_height }}"
                             loading="lazy"
                             style="{{ section.settings.image_min_height | prepend: 'min-height: ' | append: 'px' }};">
+
+                    {% elsif block.settings.video_url != blank%}
+
+                        <video autoplay  muted loop 
+                        class="d-block w-100 object-fit-cover h-auto"
+                        width="{{ section.settings.img_width }}"
+                        height="{{ section.settings.img_height }}">
+                            <source src="{{block.settings.video_url}}" type="video/mp4">
+                        </video>
+
                     {% else %}
+                        
                         {% capture current %}{% cycle 1, 2 %}{% endcapture %}<!-- Do not use new lines here -->
                         {{ 'lifestyle-' | append: current | placeholder_svg_tag: 'placeholder-svg d-block bg-secondary' }}
+
                     {% endif %}
 
                     {% if block.settings.title != blank or block.settings.description != blank %}
-                        <div class="carousel-caption">
+                        <div class="carousel-caption" style="{% if block.settings.text_position == 'bottom' %} bottom:1.25rem !important; top: auto !important; {% else %}  bottom:auto !important; top: 1.25rem !important; {% endif %} {% if block.settings.text_color != blank %} {{block.settings.text_color}} !important;{% endif%} {% if block.settings.text_color != blank%} color:{{block.settings.text_color}} !important;{% endif%}">
                             {% unless block.settings.title == blank %}
                                 <h3 class="{{ block.settings.title_size }}">
                                     {{ block.settings.title }}
@@ -223,6 +236,27 @@
                     "type": "image_picker",
                     "id": "image",
                     "label": "Image"
+                },
+                {
+                    "type": "text",
+                    "id": "video_url",
+                    "label": "Video url"
+                },
+                {
+                "type": "color",
+                "id": "text_color",
+                "label": "Text color",
+                "default": "#ffffff"
+                },
+                {
+                    "type": "select",
+                    "id": "text_position",
+                    "label": "Text position",
+                    "default": "bottom",
+                    "options": [
+                        {  "value": "top", "label": "Top" },
+                        {  "value": "bottom", "label": "Bottom" }
+                    ]
                 },
                 {
                     "type": "text",
