@@ -23,7 +23,7 @@
         </div>
 
         {%raw%}
-        <div id="hub-video-app" class="w-100">
+        <div id="video-app-{%endraw%}{{ section.id }}{%raw%}" class="w-100 video-app">
             <div v-if="videos">
 
                 <article class="mb-4">
@@ -33,11 +33,11 @@
                 </article>
                 <aside>
                     <div class="row">
-                        <a v-for="(video, index) in videos" href="" style="cursor:pointer;" @click.prevent="showPlayer(video)" class="col-3">
+                        <a v-for="(video, index) in videos" href="" style="cursor:pointer;" @click.prevent="showPlayer(video)" class="col">
                             <div class="position-relative">
                                 <img :src="video.snippet.thumbnails.medium.url" class="rounded w-100"/>
                                 <div class="play-button d-flex justify-content-center align-items-center position-absolute sticky-top w-100 h-100">
-                                    {%endraw%}<img src="{{ 'play-button.svg' | asset_url }}" width="40"/>{%raw%}
+                                    {%endraw%}<img src="{{ 'play-button.svg' | asset_url }}" width="30"/>{%raw%}
                                 </div>
                                 <h2 class="h4 d-none">{{video.snippet.title}}</h2>
                             </div>
@@ -48,73 +48,82 @@
         </div>
         {%endraw%}
 
+        {% if section.settings.all_videos %}
+            <div class="blog-view-all text-center my-5">
+                <a
+                    class="blog-view-all-btn btn {{ section.settings.view_all_btn_color }} {{ section.settings.view_all_btn_size }}"
+                    href="{{ section.settings.all_videos }}">
+                    {{ 'blogs.article.view_all' | t }}
+                </a>
+            </div>
+        {% endif %}
+
     </div>
 </section>
 
 <script>
 
     document.addEventListener("DOMContentLoaded", function() {
-      let app = new Vue({
-      el: '#hub-video-app',
-      data: {
-        videos: null,
-        video: null,
-        showplayer:false,
-        playlistId: "{{section.settings.playlist_id}}",
-        APIKey: "AIzaSyCV-BbdW2abIeCTuzDWRYrf8j6S6ey-ins",
-        baseURL: "https://www.googleapis.com/youtube/v3/"
-  
-      },
-      filters: {
-        truncate: function (value,trunc) {
-          if (!value && value.length > trunc) return 'No description'
-          value = value.toString()
-          return value.substring(0, trunc) + '...'
-        },
         
-      },
-      methods: {
-        linkify: function(inputText) {
-            var replacedText, replacePattern1, replacePattern2, replacePattern3;
-  
-            //URLs starting with http://, https://, or ftp://
-            replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
-            replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
-  
-            //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
-            replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
-            replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
-  
-            //Change email addresses to mailto:: links.
-            replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
-            replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
-  
-            return replacedText;
-        },
-        loadVideos() {
-          let self = this
-          this.loadVideos = true
-          fetch(this.baseURL + "playlistItems?part=snippet&maxResults=4&playlistId=" + this.playlistId + "&key=" + this.APIKey)
-          .then(response => response.json())
-          .then(data => {
-            if(data.items.length){
-              console.log(data.items)
-              self.videos = data.items
-              console.log(self.videos)
-              self.video = self.videos[0]
-              console.log(self.video.snippet.description.split('SAY HI:')[0])
-            }
-          })
-        },
-        showPlayer(video){
-          this.video = video
-          this.showplayer = true
-        }
-      },
-      created() {
-        this.loadVideos()
-      }
-    })
+        let app = new Vue({
+                el: '#video-app-{{ section.id }}',
+                data: {
+                    videos: null,
+                    video: null,
+                    showplayer:false,
+                    playlistId: "{{section.settings.playlist_id}}",
+                    APIKey: "AIzaSyCV-BbdW2abIeCTuzDWRYrf8j6S6ey-ins",
+                    baseURL: "https://www.googleapis.com/youtube/v3/"
+            
+                },
+                filters: {
+                    truncate: function (value,trunc) {
+                    if (!value && value.length > trunc) return 'No description'
+                    value = value.toString()
+                    return value.substring(0, trunc) + '...'
+                    },
+                    
+                },
+                methods: {
+                    linkify: function(inputText) {
+                        var replacedText, replacePattern1, replacePattern2, replacePattern3;
+            
+                        //URLs starting with http://, https://, or ftp://
+                        replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+                        replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
+            
+                        //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+                        replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+                        replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
+            
+                        //Change email addresses to mailto:: links.
+                        replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+                        replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
+            
+                        return replacedText;
+                    },
+                    loadVideos() {
+                    let self = this
+                    this.loadVideos = true
+                    fetch(this.baseURL + "playlistItems?part=snippet&maxResults=5&playlistId=" + this.playlistId + "&key=" + this.APIKey)
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.items.length){
+                        self.videos = data.items
+                        self.video = self.videos[0]
+                        }
+                    })
+                    },
+                    showPlayer(video){
+                    this.video = video
+                    this.showplayer = true
+                    }
+                },
+                created() {
+                    this.loadVideos()
+                }
+            })
+
     });
     
   </script>
@@ -147,6 +156,46 @@
             "label": "Youtube playlist ID",
             "info": "Copy id from the youtube playlist url",
             "default": "PLZSmDGQgardATUR2Ch1FHJQA4E9ExJCuZ"
+        },
+        {
+            "type": "url",
+            "id": "all_videos",
+            "label": "Video resoureces link"
+        },
+        {
+            "type": "select",
+            "id": "view_all_btn_color",
+            "label": "View all button color",
+            "default": "btn-secondary",
+            "options": [
+                { "group": "Normal", "value": "btn-link", "label": "Link" },
+                { "group": "Normal", "value": "btn-light", "label": "Light" },
+                { "group": "Normal", "value": "btn-dark", "label": "Dark" },
+                { "group": "Normal", "value": "btn-primary", "label": "Primary" },
+                { "group": "Normal", "value": "btn-secondary", "label": "Secondary" },
+                { "group": "Normal", "value": "btn-success", "label": "Success" },
+                { "group": "Normal", "value": "btn-danger", "label": "Danger" },
+                { "group": "Normal", "value": "btn-warning", "label": "Warning" },
+                { "group": "Normal", "value": "btn-info", "label": "Info" },
+                { "group": "Outline", "value": "btn-outline-dark", "label": "Dark Outline" },
+                { "group": "Outline", "value": "btn-outline-primary", "label": "Primary Outline" },
+                { "group": "Outline", "value": "btn-outline-secondary", "label": "Secondary Outline" },
+                { "group": "Outline", "value": "btn-outline-success", "label": "Success Outline" },
+                { "group": "Outline", "value": "btn-outline-danger", "label": "Danger Outline" },
+                { "group": "Outline", "value": "btn-outline-warning", "label": "Warning Outline" },
+                { "group": "Outline", "value": "btn-outline-info", "label": "Info Outline" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "view_all_btn_size",
+            "label": "View all button size",
+            "default": "",
+            "options": [
+                { "value": "btn-sm", "label": "Small" },
+                { "value": "", "label": "Normal" },
+                { "value": "btn-lg", "label": "Large" }
+            ]
         },
         {
             "type": "checkbox",
